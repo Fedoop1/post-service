@@ -1,1 +1,1 @@
-# post-service
+![post-service](https://github.com/Fedoop1/post-service/post-service-logo.jpg)
