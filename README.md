@@ -1,1 +1,1 @@
-![post-service](https://github.com/Fedoop1/post-service/post-service-logo.jpg)
+![post-service-logo](https://github.com/Fedoop1/post-service/blob/main/post-service-logo.jpg)
