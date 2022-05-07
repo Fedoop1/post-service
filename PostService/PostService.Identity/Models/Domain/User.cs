@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Authentication;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using PostService.Common.Enums;
 using PostService.Common.Types;
@@ -23,8 +24,8 @@ public class User : IIdentifiable
 
     public User(string userName, string email, Role role)
     {
-        if (string.IsNullOrEmpty(userName)) throw new InvalidNameException("User name can't be null or empty");
-        if (!EmailRegex.IsMatch(email)) throw new InvalidEmailException("User email doesn't match email regex");
+        if (string.IsNullOrEmpty(userName)) throw new InvalidUserException("User name can't be null or empty");
+        if (!EmailRegex.IsMatch(email)) throw new InvalidUserException("User email doesn't match email regex");
 
         Id = Guid.NewGuid();
         UserName = userName;
@@ -37,8 +38,8 @@ public class User : IIdentifiable
 
     public void SetPassword(string password, IPasswordHasher<User> passwordHasher)
     {
-        if (string.IsNullOrEmpty(password)) throw new InvalidPasswordException("User password can't be null or empty");
-        if (passwordHasher is null) throw new InvalidPasswordHasherException("Password hasher can't be null");
+        if (string.IsNullOrEmpty(password)) throw new InvalidCredentialException("User password can't be null or empty");
+        if (passwordHasher is null) throw new InvalidUserException("Password hasher can't be null");
 
         this.PasswordHash = passwordHasher.HashPassword(this, password);
 
@@ -47,8 +48,8 @@ public class User : IIdentifiable
 
     public bool VerifyPassword(string password, IPasswordHasher<User> passwordHasher)
     {
-        if (string.IsNullOrEmpty(password)) throw new InvalidPasswordException("User password can't be null or empty");
-        if (passwordHasher is null) throw new InvalidPasswordHasherException("Password hasher can't be null");
+        if (string.IsNullOrEmpty(password)) throw new InvalidCredentialException("User password can't be null or empty");
+        if (passwordHasher is null) throw new InvalidUserException("Password hasher can't be null");
 
         return passwordHasher.VerifyHashedPassword(this, this.PasswordHash, password) ==
             PasswordVerificationResult.Success;

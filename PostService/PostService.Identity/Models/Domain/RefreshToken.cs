@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using PostService.Common.Types;
 using PostService.Identity.Exceptions;
-using PostService.Identity.Models.Domain;
 
-namespace PostService.Identity.Models.Jwt
+namespace PostService.Identity.Models.Domain
 {
     public class RefreshToken : IIdentifiable
     {

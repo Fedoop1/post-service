@@ -1,14 +1,18 @@
-using PostService.Identity.Infrastructure.Extensions;
+using PostService.Common.App.Extensions;
+using PostService.Common.Jwt.Extensions;
+using PostService.Common.Mongo.Extensions;
 using PostService.Identity.Models.Domain;
-using PostService.Identity.Models.Jwt;
+using PostService.Identity.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IIdentityService, IdentityService>();
 
 // Configuration
 builder.ConfigureAppOptions();
+
 builder.AddJwt();
 
 builder.AddMongo();

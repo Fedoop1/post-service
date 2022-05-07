@@ -1,8 +1,11 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using PostService.Common.Mongo.Types;
 using PostService.Common.Types;
 
-namespace PostService.Identity.Infrastructure.Extensions;
+namespace PostService.Common.Mongo.Extensions;
 public static class MongoExtensions
 {
     public static void AddMongo(this WebApplicationBuilder webBuilder)

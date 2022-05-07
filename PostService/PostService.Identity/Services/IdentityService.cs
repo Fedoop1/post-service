@@ -2,13 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using PostService.Common.Enums;
 using PostService.Common.Extensions;
+using PostService.Common.Jwt.Types;
 using PostService.Identity.Exceptions;
-using PostService.Identity.Infrastructure.Options;
 using PostService.Identity.Models.Domain;
-using PostService.Identity.Models.Jwt;
-using PostService.Identity.Models.JWT.Interfaces;
 using PostService.Identity.Repositories.Interfaces;
-using PostService.Identity.Services.Interfaces;
 
 namespace PostService.Identity.Services
 {
@@ -58,7 +55,7 @@ namespace PostService.Identity.Services
             if (!user.VerifyPassword(password, passwordHasher))
                 throw new InvalidCredentialException("Invalid password");
 
-            var accessToken = await this.jwtHandler.CreateAccessToken(user.Id, user.Role);
+            var accessToken = this.jwtHandler.CreateAccessToken(user.Id, user.Role);
 
             var refreshToken = new RefreshToken(user, passwordHasher,
                 TimeSpan.FromDays(this.jwtOptions.RefreshTokenExpiration));
@@ -82,8 +79,7 @@ namespace PostService.Identity.Services
 
             if (user is null) throw new InvalidUserException($"User with id {token.UserId} doesn't exist");
 
-            return await this.jwtHandler.CreateAccessToken(user.Id,
-                new Dictionary<string, string>() { ["Role"] = user.Role.ConvertToString() });
+            return this.jwtHandler.CreateAccessToken(user.Id, user.Role);
         }
 
         // TODO: Add change password method

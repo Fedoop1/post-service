@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
-namespace PostService.API.Infrastructure.Filters
+namespace PostService.Common.Jwt.Attributes
 {
     public class JwtAuthAttribute : AuthorizeAttribute
     {

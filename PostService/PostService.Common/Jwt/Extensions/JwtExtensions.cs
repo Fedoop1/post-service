@@ -1,14 +1,22 @@
 ﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using PostService.Identity.Infrastructure.Options;
-using PostService.Identity.Models.JWT.Interfaces;
-using PostService.Identity.Services;
-using PostService.Identity.Services.Interfaces;
+using PostService.Common.Jwt.Services;
+using PostService.Common.Jwt.Types;
 
-namespace PostService.Identity.Infrastructure.Extensions;
+namespace PostService.Common.Jwt.Extensions;
 public static class JwtExtensions
 {
+    public static void ConfigureJwtOptions(this WebApplicationBuilder webBuilder)
+    {
+        using var serviceProvider = webBuilder.Services.BuildServiceProvider();
+        var configuration = serviceProvider.GetService<IConfiguration>();
+
+        webBuilder.Services.Configure<JwtOptions>(configuration?.GetSection("Jwt"));
+    }
+
     public static void AddJwt(this WebApplicationBuilder webBuilder)
     {
         webBuilder.ConfigureJwtOptions();
@@ -18,7 +26,6 @@ public static class JwtExtensions
         var jwtOptions = services.GetService<JwtOptions>();
 
         webBuilder.Services.AddSingleton<IJwtHandler, JwtHandler>();
-        webBuilder.Services.AddScoped<IIdentityService, IdentityService>();
 
         webBuilder.Services.AddAuthentication().AddJwtBearer(config =>
         {
@@ -27,7 +34,7 @@ public static class JwtExtensions
             {
                 ValidIssuer = jwtOptions.Issuer,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecurityKey)),
-                RequireExpirationTime = true,
+                ValidateLifetime = jwtOptions.ValidateLifetime,
             };
         });
     }

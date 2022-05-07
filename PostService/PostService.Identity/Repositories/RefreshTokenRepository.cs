@@ -1,5 +1,6 @@
-﻿using PostService.Common.Mongo.Types;
-using PostService.Identity.Models.Jwt;
+﻿using PostService.Common.Jwt.Types;
+using PostService.Common.Mongo.Types;
+using PostService.Identity.Models.Domain;
 using PostService.Identity.Repositories.Interfaces;
 
 namespace PostService.Identity.Repositories;

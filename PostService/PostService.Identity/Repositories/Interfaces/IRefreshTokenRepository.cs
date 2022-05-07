@@ -1,4 +1,5 @@
-﻿using PostService.Identity.Models.Jwt;
+﻿using PostService.Common.Jwt.Types;
+using PostService.Identity.Models.Domain;
 
 namespace PostService.Identity.Repositories.Interfaces
 {

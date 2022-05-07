@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PostService.API.Infrastructure.Filters;
+using PostService.Common.App.Types.Options;
+using PostService.Common.Jwt.Attributes;
 using PostService.Identity.Commands;
-using PostService.Identity.Infrastructure.Options;
-using PostService.Identity.Services.Interfaces;
+using PostService.Identity.Services;
 
 namespace PostService.Identity.Controllers
 {
