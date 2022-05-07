@@ -1,11 +1,15 @@
 using PostService.API.Infrastructure.Extensions;
+using PostService.Common.Jwt.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 builder.ConfigureAppOptions();
+
+builder.AddJwt();
 
 builder.Services.AddCors((options) =>
 {

@@ -1,0 +1,28 @@
+@apiUrl = http://localhost:6000
+@identityServiceUrl = http://localhost:6001
+@accessToken = xxxxxxxxxx
+
+### ============= Identity ============= ###
+
+// Roles: 
+// 1 - User, 
+// 2 - Admin
+
+### Sign-up
+POST {{identityServiceUrl}}/sign-up
+Content-Type: application/json
+{
+    "email": "fedoop@testmail.com",
+    "password": "secret",
+    "role": 2,
+}
+
+### Sign-in
+POST {{identityServiceUrl}}/sign-in
+Content-Type: application/json
+{
+    "email": "fedoop@testmail.com",
+    "password": "secret",
+}
+
+### ============= API Gateway ============= ###
