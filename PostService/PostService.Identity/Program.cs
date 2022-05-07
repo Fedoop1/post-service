@@ -1,20 +1,19 @@
 using PostService.Identity.Infrastructure.Extensions;
 using PostService.Identity.Models.Domain;
-using PostService.Identity.Services;
-using PostService.Identity.Services.Interfaces;
+using PostService.Identity.Models.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Services
 builder.Services.AddControllers();
-builder.Services.AddScoped<IIdentityService, IdentityService>();
 
 // Configuration
 builder.ConfigureAppOptions();
+builder.AddJwt();
+
 builder.AddMongo();
 builder.AddMongoRepository<User>("users");
-builder.AddMongoRepository<User>("refresh-tokens");
-
+builder.AddMongoRepository<RefreshToken>("refresh-tokens");
 
 builder.Services.AddCors((options) =>
 {

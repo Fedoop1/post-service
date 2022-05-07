@@ -1,5 +1,4 @@
-﻿using PostService.Common.Mongo;
-using PostService.Common.Mongo.Types;
+﻿using PostService.Common.Mongo.Types;
 using PostService.Identity.Models.Domain;
 using PostService.Identity.Repositories.Interfaces;
 
@@ -14,29 +13,14 @@ public class UserRepository : IUserRepository
         this.userRepository = userRepository;
     }
 
-    public Task AddAsync(User user)
-    {
-        throw new NotImplementedException();
-    }
+    public Task AddAsync(User user) => this.userRepository.AddAsync(user);
 
-    public Task RemoveAsync(User user)
-    {
-        throw new NotImplementedException();
-    }
+    public Task RemoveAsync(User user) => this.userRepository.RemoveAsync(user);
 
-    public Task UpdateAsync(User user)
-    {
-        throw new NotImplementedException();
-    }
+    public Task UpdateAsync(User user) => this.userRepository.UpdateAsync(user);
 
-    public Task<User> GetAsync(Guid userId)
-    {
-        throw new NotImplementedException();
-    }
+    public Task<User> GetAsync(Guid userId) => this.userRepository.FindAsync(userId);
 
-    public Task<User> GetAsync(string userName)
-    {
-        throw new NotImplementedException();
-    }
+    public Task<User> GetAsync(string userName) => this.userRepository.FindAsync((user) => user.UserName == userName);
 }
 
