@@ -1,18 +1,18 @@
-using PostService.Orders.Infrastructure.Extensions;
+using PostService.Common.App.Extensions;
+using PostService.Common.CORS.Extensions;
+using PostService.Common.Jwt.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
+
+builder.AddJwt();
+builder.AddCors();
+
 builder.ConfigureAppOptions();
 
 var app = builder.Build();
+app.UseCors();
 
-// Configure the HTTP request pipeline.
-
-app.UseAuthorization();
-
-app.MapControllers();
-
+app.MapDefaultControllerRoute();
 app.Run();

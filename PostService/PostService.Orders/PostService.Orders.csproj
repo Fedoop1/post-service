@@ -8,9 +8,12 @@
 
   <ItemGroup>
     <Folder Include="Models\" />
-    <Folder Include="Infrastructure\" />
     <Folder Include="Repositories\" />
     <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PostService.Common\PostService.Common.csproj" />
   </ItemGroup>
 
 </Project>
