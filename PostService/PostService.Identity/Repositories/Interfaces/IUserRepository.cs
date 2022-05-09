@@ -1,6 +1,9 @@
-﻿using PostService.Identity.Models.Domain;
+﻿using PostService.Common.Types;
+using PostService.Identity.Models.Domain;
 
 namespace PostService.Identity.Repositories.Interfaces;
+
+[Injectable]
 public interface IUserRepository
 {
     public Task AddAsync(User user);

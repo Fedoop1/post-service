@@ -1,12 +1,12 @@
-﻿using PostService.Common.Jwt.Types;
+﻿using PostService.Common.Types;
 using PostService.Identity.Models.Domain;
 
-namespace PostService.Identity.Repositories.Interfaces
+namespace PostService.Identity.Repositories.Interfaces;
+
+[Injectable]
+public interface IRefreshTokenRepository
 {
-    public interface IRefreshTokenRepository
-    {
-        Task AddAsync(RefreshToken token);
-        Task UpdateAsync(RefreshToken token);
-        Task<RefreshToken> GetAsync(string token);
-    }
+    Task AddAsync(RefreshToken token);
+    Task UpdateAsync(RefreshToken token);
+    Task<RefreshToken> GetAsync(string token);
 }
