@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PostService.Common.Enums;
 using PostService.Common.Jwt.Types;
@@ -13,11 +14,11 @@ namespace PostService.Common.Jwt.Services
         private readonly JwtOptions jwtOptions;
         private readonly SigningCredentials signingCredentials;
 
-        public JwtHandler(JwtOptions jwtOptions)
+        public JwtHandler(IOptions<JwtOptions> jwtOptions)
         {
-            this.jwtOptions = jwtOptions;
+            this.jwtOptions = jwtOptions.Value;
             this.signingCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.jwtOptions.SecurityKey)),
+                new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.jwtOptions.SecretKey)),
                     SecurityAlgorithms.HmacSha256);
         }
 
