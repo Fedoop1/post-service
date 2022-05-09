@@ -1,38 +1,22 @@
-using PostService.API.Infrastructure.Extensions;
+using PostService.Common.App.Extensions;
+using PostService.Common.CORS.Extensions;
 using PostService.Common.Jwt.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 
 builder.ConfigureAppOptions();
 
 builder.AddJwt();
-
-builder.Services.AddCors((options) =>
-{
-    options.AddPolicy("Development", (builder) =>
-    {
-        builder.AllowAnyHeader();
-        builder.AllowAnyMethod();
-        builder.AllowAnyOrigin();
-        builder.AllowCredentials();
-    });
-
-    options.DefaultPolicyName = "Development";
-});
+builder.AddCors();
 
 builder.Services.AddAuthorization(options => options.AddPolicy("Admin", builder => builder.RequireRole("admin")));
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
+app.UseCors();
 
 app.UseAuthorization();
-app.UseCors(app.Configuration.GetValue<string>("CORS"));
 
-app.MapControllers();
-
+app.MapDefaultControllerRoute();
 app.Run();
