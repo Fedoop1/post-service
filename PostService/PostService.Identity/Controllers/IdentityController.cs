@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PostService.Identity.Commands;
 using PostService.Identity.Services;
+using PostService.Common.Jwt.Extensions;
 
 namespace PostService.Identity.Controllers
 {
@@ -26,5 +27,16 @@ namespace PostService.Identity.Controllers
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignIn(SignIn command) =>
             Ok(await this.identityService.SignInAsync(command.UserName, command.Password));
+
+        [HttpPost("sign-out")]
+        public async Task<IActionResult> SignOut(SignOut command)
+        {
+            await this.identityService.SignOutAsync(command.UserId,
+                JwtExtensions.GetBearerToken(this.Request.Headers.Authorization));
+
+            return NoContent();
+        }
+
+        
     }
 }

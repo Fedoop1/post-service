@@ -8,7 +8,9 @@ namespace PostService.Identity.Services;
 [Injectable(Scope.Singleton)]
 public interface ITokenService
 {
-    public Task<RefreshToken> GetRefreshToken(User user);
-    public Task<AccessToken> GetAccessToken(string refreshToken);
-    public Task RevokeRefreshToken(string refreshToken);
+    public Task<RefreshToken> GetRefreshTokenAsync(User user);
+    public Task<AccessToken> GetAccessTokenAsync(string refreshToken);
+    public Task RevokeRefreshTokenAsync(string refreshToken);
+    public Task RevokeAccessTokenAsync(string accessToken);
+    public AccessToken GetTokenPayload(string accessToken);
 }

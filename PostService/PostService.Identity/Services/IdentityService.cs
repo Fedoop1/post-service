@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using PostService.Common.Enums;
 using PostService.Common.Jwt.Types;
+using PostService.Identity.Commands;
 using PostService.Identity.Exceptions;
 using PostService.Identity.Models.Domain;
 using PostService.Identity.Repositories.Interfaces;
@@ -54,8 +55,8 @@ namespace PostService.Identity.Services
             if (!user.VerifyPassword(password, passwordHasher))
                 throw new InvalidCredentialException("Invalid password");
 
-            var refreshToken = await this.tokenService.GetRefreshToken(user);
-            var accessToken = await this.tokenService.GetAccessToken(refreshToken.Token);
+            var refreshToken = await this.tokenService.GetRefreshTokenAsync(user);
+            var accessToken = await this.tokenService.GetAccessTokenAsync(refreshToken.Token);
 
             return new JsonWebToken(accessToken, refreshToken);
         }
@@ -64,6 +65,21 @@ namespace PostService.Identity.Services
         {
             // TODO: Add change password method
             throw new NotImplementedException();
+        }
+
+        public async Task SignOutAsync(Guid userId, string accessToken)
+        {
+            if (string.IsNullOrEmpty(accessToken))
+                throw new InvalidAccessTokenException("Access token can't be null or empty");
+
+            var user = await this.userRepository.GetAsync(userId);
+
+            if (user is null) throw new InvalidUserException($"User with id {user} doesn't exist");
+
+            var refreshToken = await this.tokenService.GetRefreshTokenAsync(user);
+
+            await this.tokenService.RevokeRefreshTokenAsync(refreshToken.Token);
+            await this.tokenService.RevokeAccessTokenAsync(accessToken);
         }
     }
 }

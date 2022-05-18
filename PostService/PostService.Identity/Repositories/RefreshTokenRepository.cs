@@ -1,4 +1,4 @@
-﻿using PostService.Common.Jwt.Types;
+﻿using System.Linq.Expressions;
 using PostService.Common.Mongo.Types;
 using PostService.Identity.Models.Domain;
 using PostService.Identity.Repositories.Interfaces;
@@ -20,5 +20,8 @@ public class RefreshTokenRepository : IRefreshTokenRepository
 
     public async Task<RefreshToken> GetAsync(string token) =>
         await refreshTokenRepository.FindAsync((refreshToken) => refreshToken.Token == token);
+
+    public async Task<RefreshToken> GetAsync(Guid userId) =>
+        await refreshTokenRepository.FindAsync((token) => token.UserId == userId);
 }
 
