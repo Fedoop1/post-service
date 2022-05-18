@@ -21,6 +21,9 @@ namespace PostService.Common.Mongo.Types;
 
         public Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate) => this.mongoCollection.FindAsync(predicate).Result.SingleOrDefaultAsync();
 
+        public Task<List<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate) =>
+            this.mongoCollection.FindAsync(predicate).Result.ToListAsync();
+
         public Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate) =>
             this.mongoCollection.FindAsync(predicate).Result.AnyAsync();
     }

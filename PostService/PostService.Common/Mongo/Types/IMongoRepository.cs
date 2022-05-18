@@ -9,5 +9,6 @@ public interface IMongoRepository<TEntity> where TEntity: IIdentifiable
     Task UpdateAsync(TEntity entity);
     Task<TEntity> FindAsync(Guid id);
     Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate);
+    Task<List<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate);
     Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate);
 }
