@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using PostService.Common.Jwt.Services;
 using PostService.Common.Jwt.Types;
@@ -9,6 +10,7 @@ using PostService.Common.Jwt.Types;
 namespace PostService.Common.Jwt.Extensions;
 public static class JwtExtensions
 {
+    private const int TicksInMillisecond = 10000;
     public const string SectionName = "Jwt";
 
     public static void AddJwt(this WebApplicationBuilder webBuilder)
@@ -33,6 +35,13 @@ public static class JwtExtensions
         });
     }
 
+    public static long ToTimestamp(this DateTime dateTime) =>
+        (dateTime - DateTime.UnixEpoch).Ticks / TicksInMillisecond;
+
+    public static string GetBearerToken(StringValues authorizationHeader) => authorizationHeader.Single().Split(' ').Last();
+
     private static void ConfigureJwtOptions(this WebApplicationBuilder webBuilder) =>
         webBuilder.Services.AddOptions<JwtOptions>().BindConfiguration(SectionName);
+
+    
 }

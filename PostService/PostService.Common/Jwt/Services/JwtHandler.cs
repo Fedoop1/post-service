@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PostService.Common.Enums;
+using PostService.Common.Jwt.Extensions;
 using PostService.Common.Jwt.Types;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -48,8 +49,41 @@ namespace PostService.Common.Jwt.Services
 
             var token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            return new AccessToken(id, token, TimeSpan.FromMinutes(jwtOptions.AccessTokenExpiration).Milliseconds, role,
-                claims ?? new Dictionary<string, string>());
+            return new AccessToken
+            {
+                Id = id,
+                Token = token,
+                Expires = TimeSpan.FromMinutes(jwtOptions.AccessTokenExpiration).Milliseconds,
+                Role = role,
+                Claims = claims ?? new Dictionary<string, string>()
+            };
+        }
+
+        public AccessToken GetTokenPayload(string accessToken)
+        {
+            if (string.IsNullOrEmpty(accessToken))
+                throw new InvalidAccessTokenException("Access token can't be null or empty");
+
+            var securityTokenHandler = new JwtSecurityTokenHandler();
+
+            securityTokenHandler.ValidateToken(accessToken,
+                new TokenValidationParameters()
+                {
+                    IssuerSigningKey = this.signingCredentials.Key,
+                    ValidateLifetime = this.jwtOptions.ValidateLifetime,
+                    ValidIssuer = this.jwtOptions.Issuer,
+                }, out var securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken) return null;
+
+            return new AccessToken()
+            {
+                Id = Guid.Parse(jwtSecurityToken.Id),
+                Token = accessToken,
+                Expires = jwtSecurityToken.ValidTo.ToTimestamp(),
+                Claims = jwtSecurityToken.Claims.ToDictionary(c => c.Type, c => c.Value),
+                Role = Enum.Parse<Role>(jwtSecurityToken.Claims.FirstOrDefault((claim) => claim.Type == ClaimTypes.Role)?.Value),
+            };
         }
     }
 }

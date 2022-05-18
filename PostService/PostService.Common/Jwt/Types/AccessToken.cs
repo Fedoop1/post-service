@@ -2,5 +2,12 @@
 
 namespace PostService.Common.Jwt.Types;
 
-public record AccessToken(Guid Id, string Token, long Expires, Role Role, IDictionary<string, string> Claims);
+public record AccessToken()
+{
+    public Guid Id { get; init; }
+    public string Token { get; init; }
+    public long Expires { get; init; }
+    public Role Role { get; init; }
+    public IDictionary<string, string> Claims { get; init; }
+}
 
