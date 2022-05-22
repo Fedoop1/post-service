@@ -6,11 +6,11 @@ namespace PostService.Identity.Models.Domain
 {
     public class RefreshToken : IIdentifiable
     {
-        public Guid Id { get; }
-        public Guid UserId { get; }
-        public string Token { get; }
-        public DateTime CreatedAt { get; }
-        public DateTime ExpiresAt { get; }
+        public Guid Id { get; private set; }
+        public Guid UserId { get;  private set; }
+        public string Token { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime ExpiresAt { get; private set; }
         public DateTime? RevokedAt { get; private set; }
         public bool IsRevoked => this.RevokedAt.HasValue;
 

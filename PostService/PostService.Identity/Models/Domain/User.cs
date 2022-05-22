@@ -14,12 +14,12 @@ public class User : IIdentifiable
         @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
         RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-    public Guid Id { get; }
-    public string UserName { get; }
-    public string Email { get; }
+    public Guid Id { get; private set; }
+    public string UserName { get; private set; }
+    public string Email { get; private set; }
     public string PasswordHash { get; private set; }
-    public Role Role { get; }
-    public DateTime CreatedAt { get; }
+    public Role Role { get; private set; }
+    public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
     public User(string userName, string email, Role role)
