@@ -31,7 +31,7 @@ namespace PostService.Common.Jwt.Services
             {
                 new(ClaimTypes.Role, role.ToString()),
                 new(JwtRegisteredClaimNames.Sub, id.ToString("N")),
-                new(JwtRegisteredClaimNames.Iat, (DateTime.Now - DateTime.UnixEpoch).TotalSeconds.ToString()),
+                new(JwtRegisteredClaimNames.Iat, DateTime.Now.ToTimestamp().ToString(), ClaimValueTypes.Integer64),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString("N")),
             };
 
@@ -72,6 +72,8 @@ namespace PostService.Common.Jwt.Services
                     IssuerSigningKey = this.signingCredentials.Key,
                     ValidateLifetime = this.jwtOptions.ValidateLifetime,
                     ValidIssuer = this.jwtOptions.Issuer,
+                    ValidAudience = this.jwtOptions.ValidAudience,
+                    ValidateAudience = this.jwtOptions.ValidateAudience,
                 }, out var securityToken);
 
             if (securityToken is not JwtSecurityToken jwtSecurityToken) return null;
