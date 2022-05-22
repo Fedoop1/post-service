@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EasyNetQ" Version="6.3.1" />
+    <PackageReference Include="EasyNetQ.Management.Client" Version="1.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.4" />
     <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
@@ -21,7 +23,6 @@
 
   <ItemGroup>
     <Folder Include="RabbitMq\Extensions\" />
-    <Folder Include="RabbitMq\Types\" />
   </ItemGroup>
 
 </Project>
