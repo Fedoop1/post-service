@@ -14,8 +14,10 @@ builder.AddCors();
 builder.Services.AddAuthorization(options => options.AddPolicy("Admin", builder => builder.RequireRole("admin")));
 
 var app = builder.Build();
+
 app.UseCors();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapDefaultControllerRoute();

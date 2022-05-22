@@ -1,9 +1,7 @@
 ﻿using System.Security.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using PostService.Common.Enums;
 using PostService.Common.Jwt.Types;
-using PostService.Identity.Commands;
 using PostService.Identity.Exceptions;
 using PostService.Identity.Models.Domain;
 using PostService.Identity.Repositories.Interfaces;

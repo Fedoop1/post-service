@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using PostService.Common.Mongo.Types;
+﻿using PostService.Common.Mongo.Types;
 using PostService.Identity.Models.Domain;
 using PostService.Identity.Repositories.Interfaces;
 
