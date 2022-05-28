@@ -1,4 +1,2 @@
 ﻿namespace PostService.Common.Types;
-public interface IEvent
-{
-}
+public interface IEvent : IMessage { }

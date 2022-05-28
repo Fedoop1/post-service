@@ -18,9 +18,9 @@ public static class RabbitMqExtensions
 
         using var services = webApplicationBuilder.Services.BuildServiceProvider();
 
-        webApplicationBuilder.Services.AddSingleton<IBus>(provider =>
+        webApplicationBuilder.Services.AddSingleton(provider =>
         {
-            var rabbitMqOptions = provider.GetService<IOptions<RabbitMqOptions>>().Value;
+            var rabbitMqOptions = provider.GetService<IOptions<RabbitMqOptions>>()!.Value;
 
             var busPublisher = RabbitHutch.CreateBus(rabbitMqOptions.HostName, (ushort)rabbitMqOptions.Port,
                 rabbitMqOptions.VirtualHost, rabbitMqOptions.UserName, rabbitMqOptions.Password,
@@ -30,21 +30,13 @@ public static class RabbitMqExtensions
 
             return busPublisher;
         });
+
+        webApplicationBuilder.Services
+            .AddSingleton<IMessageNamingConventionProvider, MessageNamingConventionProvider>();
     }
 
-    // TODO: Add additional abstraction level over IBus
+    // TODO: Add IBus configuration logic
     private static void ConfigureBus(IBus busPublisher)
     {
-        var autoSubscriber = new AutoSubscriber(busPublisher, "")
-        {
-            // TODO: Add message dispatcher
-            AutoSubscriberMessageDispatcher = null,
-            ConfigureSubscriptionConfiguration = config =>
-            {
-                // TODO: Add config here
-            }
-        };
-
-        autoSubscriber.Subscribe(new[] { Assembly.GetCallingAssembly() });
     }
 }

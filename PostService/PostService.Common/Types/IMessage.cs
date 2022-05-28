@@ -1,2 +1,4 @@
 ﻿namespace PostService.Common.Types;
-public interface ICommand : IEvent { }
+
+public interface IMessage {}
+
