@@ -1,13 +1,23 @@
-﻿using PostService.Common.Types;
+﻿using EasyNetQ;
+using PostService.Common.Types;
 
 namespace PostService.Common.RabbitMq.Types;
 public class BusPublisher : IBusPublisher
 {
-    // TODO: Add implementation
-    public BusPublisher() { }
+    private readonly IBus busClient;
+    private readonly IMessageNamingConventionProvider messageNamingConventionProvider;
 
-    public Task SendAsync<TCommand>(TCommand command)
-        where TCommand : ICommand => Task.CompletedTask;
+    public BusPublisher(IBus busClient, IMessageNamingConventionProvider messageNamingConventionProvider)
+    {
+        this.busClient = busClient;
+        this.messageNamingConventionProvider = messageNamingConventionProvider;
+    }
 
-    public Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent => Task.CompletedTask;
+    public async Task SendAsync<TCommand>(TCommand command)
+        where TCommand : ICommand =>
+        await this.busClient.SendReceive.SendAsync(this.messageNamingConventionProvider.GetQueueName<TCommand>(),
+            command);
+
+    public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent =>
+        await this.busClient.PubSub.PublishAsync(@event);
 }

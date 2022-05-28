@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Reflection;
+using Microsoft.Extensions.Options;
 using PostService.Common.Types;
 
 namespace PostService.Common.RabbitMq.Types;
@@ -12,10 +13,26 @@ public class MessageNamingConventionProvider : IMessageNamingConventionProvider
         this.@namespace = options.Value.Namespace;
     }
 
-    // TODO: Add message naming convention logic
-    public string GetMessageName<TMessage>(TMessage message) where TMessage : IMessage
+    public string GetMessageName<TMessage>() where TMessage : IMessage
     {
-        return null;
+        var messageType = typeof(TMessage);
+
+        return FromPascalToUnderscores(messageType.Name).ToLowerInvariant();
     }
+
+    public string GetQueueName<TMessage>() where TMessage : IMessage
+    {
+        var messageType = typeof(TMessage);
+
+        var messageNamespace = messageType.GetCustomAttribute<MessageNamespaceAttribute>()?.Namespace ?? @namespace;
+        var assemblyName = Assembly.GetCallingAssembly().GetName().Name;
+        var typeName = FromPascalToUnderscores(messageType.Name).ToLowerInvariant();
+
+        return $"{assemblyName}_{messageNamespace}_{typeName}";
+    }
+
+    private string FromPascalToUnderscores(string text) => string.Concat(
+    text.Select((@char, index) =>
+        index > 0 && char.IsUpper(@char) ? "_" + @char : @char.ToString())).ToLowerInvariant();
 }
 

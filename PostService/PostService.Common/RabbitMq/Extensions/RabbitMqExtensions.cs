@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using EasyNetQ;
-using EasyNetQ.AutoSubscribe;
+﻿using EasyNetQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
