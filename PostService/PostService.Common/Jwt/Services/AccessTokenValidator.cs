@@ -1,16 +1,13 @@
-﻿using Microsoft.Extensions.Options;
-using PostService.Common.Jwt.Types;
+﻿using PostService.Common.Jwt.Types;
 
 namespace PostService.Common.Jwt.Services;
 
 public class AccessTokenValidator : IAccessTokenValidator
 {
-    private readonly IOptions<JwtOptions> jwtOptions;
     private readonly IJwtHandler jwtHandler;
 
-    public AccessTokenValidator(IOptions<JwtOptions> jwtOptions, IJwtHandler jwtHandler)
+    public AccessTokenValidator(IJwtHandler jwtHandler)
     {
-        this.jwtOptions = jwtOptions;
         this.jwtHandler = jwtHandler;
     }
 

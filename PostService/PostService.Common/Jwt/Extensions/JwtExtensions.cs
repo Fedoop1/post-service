@@ -7,9 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 using PostService.Common.Jwt.Services;
 using PostService.Common.Jwt.Types;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-
+using PostService.Common.Jwt.Middlewares;
 
 namespace PostService.Common.Jwt.Extensions;
+
 public static class JwtExtensions
 {
     private const int TicksInMillisecond = 10000;
@@ -24,6 +25,8 @@ public static class JwtExtensions
         var jwtOptions = services.GetService<IOptions<JwtOptions>>()?.Value;
 
         webBuilder.Services.AddSingleton<IJwtHandler, JwtHandler>();
+        webBuilder.Services.AddSingleton<IAccessTokenValidator, AccessTokenValidator>();
+        webBuilder.Services.AddTransient<AccessTokenValidationMiddleware>();
 
         webBuilder.Services.AddAuthentication(config =>
         {
@@ -44,10 +47,15 @@ public static class JwtExtensions
         });
     }
 
+    public static void UseAccessTokenValidation(this WebApplication webApplication) =>
+        webApplication.UseMiddleware<AccessTokenValidationMiddleware>();
+
     public static long ToTimestamp(this DateTime dateTime) =>
         (dateTime - DateTime.UnixEpoch).Ticks / TicksInMillisecond;
 
-    public static string GetBearerToken(StringValues authorizationHeader) => authorizationHeader.Single().Split(' ').Last();
+    public static string GetBearerToken(StringValues authorizationHeader) => authorizationHeader.SingleOrDefault()?.Split(' ')?.LastOrDefault();
+
+    public static string GetAccessTokenCacheKey(string accessToken) => $"tokens:{accessToken}";
 
     private static void ConfigureJwtOptions(this WebApplicationBuilder webBuilder) =>
         webBuilder.Services.AddOptions<JwtOptions>().BindConfiguration(SectionName);
