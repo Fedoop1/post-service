@@ -1,4 +1,4 @@
-﻿namespace PostService.Common.App.Types.Options;
+﻿namespace PostService.Common.App.Types;
 
 public record AppOptions
 {

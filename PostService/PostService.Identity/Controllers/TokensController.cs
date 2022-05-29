@@ -24,7 +24,7 @@ public class TokensController : ControllerBase
     [HttpGet("access-token/{refreshToken}/refresh")]
     public async Task<IActionResult> RefreshAccessToken(string refreshToken) => Ok(await this.tokenService.GetAccessTokenAsync(refreshToken));
 
-    [HttpGet("access-token/{accessToken}/revoke")]
+    [HttpPost("access-token/{accessToken}/revoke")]
     public async Task<IActionResult> RevokeAccessToken(string accessToken)
     {
         await this.tokenService.RevokeAccessTokenAsync(accessToken);

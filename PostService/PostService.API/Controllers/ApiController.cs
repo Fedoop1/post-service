@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using PostService.Common.App.Types.Options;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace PostService.API.Controllers;
 

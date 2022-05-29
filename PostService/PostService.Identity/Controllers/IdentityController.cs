@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PostService.Identity.Commands;
 using PostService.Identity.Services;
 using PostService.Common.Jwt.Extensions;
+using PostService.Identity.Messages.Commands;
 
 namespace PostService.Identity.Controllers
 {

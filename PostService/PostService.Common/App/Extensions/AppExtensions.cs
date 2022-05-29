@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using PostService.Common.App.Types.Options;
+using PostService.Common.App.Types;
 using PostService.Common.Enums;
 using PostService.Common.Types;
 
