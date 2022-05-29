@@ -6,6 +6,8 @@ using PostService.Identity.Models.Domain;
 using PostService.Common.CORS.Extensions;
 using PostService.Common.Extensions;
 using PostService.Common.Mongo.Types;
+using PostService.Common.RabbitMq.Extensions;
+using PostService.Common.Redis.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +21,9 @@ builder.Services.AddSingleton<IMongoDbInitializer, MongoDbInitializer>();
 builder.ConfigureAppOptions();
 
 builder.AddJwt();
+builder.AddRedis();
 builder.AddCors();
+builder.AddRabbitMq();
 
 builder.AddMongo();
 builder.AddMongoRepository<User>("users");
@@ -33,9 +37,11 @@ builder.RegisterProviders();
 var app = builder.Build();
 
 app.UseCors();
+app.UseRabbitMq();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAccessTokenValidation();
 
 app.InitializeAsync();
 

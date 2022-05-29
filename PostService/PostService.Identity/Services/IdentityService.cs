@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using PostService.Common.Enums;
 using PostService.Common.Jwt.Types;
+using PostService.Common.RabbitMq.Types;
 using PostService.Identity.Exceptions;
+using PostService.Identity.Messages.Event;
 using PostService.Identity.Models.Domain;
 using PostService.Identity.Repositories.Interfaces;
 
@@ -13,15 +15,18 @@ namespace PostService.Identity.Services
         private readonly IUserRepository userRepository;
         private readonly ITokenService tokenService;
         private readonly IPasswordHasher<User> passwordHasher;
+        private readonly IBusPublisher busPublisher;
 
         public IdentityService(
             IUserRepository userRepository, 
             ITokenService tokenService,
-            IPasswordHasher<User> passwordHasher)
+            IPasswordHasher<User> passwordHasher,
+            IBusPublisher busPublisher)
         {
             this.userRepository = userRepository;
             this.tokenService = tokenService;
             this.passwordHasher = passwordHasher;
+            this.busPublisher = busPublisher;
         }
 
         public async Task SignUpAsync(string userName, string email, string password, Role role)
@@ -39,6 +44,7 @@ namespace PostService.Identity.Services
             user.SetPassword(password, passwordHasher);
 
             await this.userRepository.AddAsync(user);
+            await this.busPublisher.PublishAsync(new SignUp(user.Id, email, role));
         }
 
         public async Task<JsonWebToken> SignInAsync(string userName, string password)
@@ -56,12 +62,15 @@ namespace PostService.Identity.Services
             var refreshToken = await this.tokenService.GetRefreshTokenAsync(user);
             var accessToken = await this.tokenService.GetAccessTokenAsync(refreshToken.Token);
 
-            return new JsonWebToken(accessToken, refreshToken);
+            var jwt = new JsonWebToken(accessToken, refreshToken);
+
+            await this.busPublisher.PublishAsync(new SignIn(user.Id));
+            return jwt;
         }
 
         public Task ChangePassword(Guid id, string oldPassword, string newPassword)
         {
-            // TODO: Add change password method
+            // TODO: Add change password logic
             throw new NotImplementedException();
         }
 
@@ -78,6 +87,7 @@ namespace PostService.Identity.Services
 
             await this.tokenService.RevokeRefreshTokenAsync(refreshToken.Token);
             await this.tokenService.RevokeAccessTokenAsync(accessToken);
+            await this.busPublisher.PublishAsync(new SignOut(userId));
         }
     }
 }
