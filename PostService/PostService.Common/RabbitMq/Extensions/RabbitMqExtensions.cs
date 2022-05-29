@@ -12,9 +12,7 @@ public static class RabbitMqExtensions
 
     public static void AddRabbitMq(this WebApplicationBuilder webApplicationBuilder)
     {
-        webApplicationBuilder.Services.AddOptions<RabbitMqOptions>(SectionName);
-
-        using var services = webApplicationBuilder.Services.BuildServiceProvider();
+        ConfigureRabbitMqOptions(webApplicationBuilder);
 
         webApplicationBuilder.Services.AddSingleton(provider =>
         {
@@ -24,17 +22,18 @@ public static class RabbitMqExtensions
                 rabbitMqOptions.VirtualHost, rabbitMqOptions.UserName, rabbitMqOptions.Password,
                 rabbitMqOptions.HeartbeatInterval, register => { });
 
-            ConfigureBus(busPublisher);
-
             return busPublisher;
         });
 
+        webApplicationBuilder.Services.AddSingleton<IBusPublisher, BusPublisher>();
+        webApplicationBuilder.Services.AddSingleton<IBusSubscriber, BusSubscriber>();
         webApplicationBuilder.Services
             .AddSingleton<IMessageNamingConventionProvider, MessageNamingConventionProvider>();
     }
 
-    // TODO: Add IBus configuration logic
-    private static void ConfigureBus(IBus busPublisher)
-    {
-    }
+    public static IBusSubscriber UseRabbitMq(this WebApplication webApp) => webApp.Services.GetService<IBusSubscriber>();
+
+    private static void ConfigureRabbitMqOptions(this WebApplicationBuilder webBuilder) =>
+        webBuilder.Services.AddOptions<RabbitMqOptions>().BindConfiguration(SectionName);
+
 }

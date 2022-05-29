@@ -32,8 +32,6 @@ public static class MongoExtensions
         });
     }
 
-    private static void ConfigureMongoOptions(this WebApplicationBuilder webBuilder)
-    {
+    private static void ConfigureMongoOptions(this WebApplicationBuilder webBuilder) =>
         webBuilder.Services.AddOptions<MongoOptions>().BindConfiguration(SectionName);
-    }
 }
