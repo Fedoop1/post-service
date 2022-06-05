@@ -1,35 +1,42 @@
 ﻿using System.Reflection;
+using EasyNetQ;
 using Microsoft.Extensions.Options;
-using PostService.Common.Types;
 
 namespace PostService.Common.RabbitMq.Types;
 
-public class MessageNamingConventionProvider : IMessageNamingConventionProvider
+public class MessageNamingConventionProvider : Conventions, IMessageNamingConventionProvider
 {
     private readonly string @namespace;
 
-    public MessageNamingConventionProvider(IOptions<RabbitMqOptions> options)
+    public MessageNamingConventionProvider(IOptions<RabbitMqOptions> options, DefaultTypeNameSerializer typeNameSerializer) : base(typeNameSerializer)
     {
         this.@namespace = options.Value.Namespace;
+
+        this.QueueNamingConvention = (messageType, _) => GetQueueName(messageType);
+        this.ExchangeNamingConvention = messageType => GetNamespace(messageType).ToLowerInvariant();
+        this.ErrorQueueNamingConvention = _ => GetErrorQueueName();
+        this.ErrorExchangeNamingConvention = _ => GetErrorExchangeName();
     }
 
-    public string GetMessageName<TMessage>() where TMessage : IMessage
+    public string GetMessageName(Type messageType) => this.FromPascalToUnderscores(messageType.Name);
+
+    public string GetQueueName(Type messageType)
     {
-        var messageType = typeof(TMessage);
+        var messageNamespace = this.GetNamespace(messageType);
+        var assemblyName = Assembly.GetEntryAssembly().GetName().Name;
 
-        return FromPascalToUnderscores(messageType.Name).ToLowerInvariant();
+        var messageName = FromPascalToUnderscores(messageType.Name).ToLowerInvariant();
+
+        return $"{assemblyName}\\{messageNamespace}_{messageName}";
     }
 
-    public string GetQueueName<TMessage>() where TMessage : IMessage
-    {
-        var messageType = typeof(TMessage);
+    public string GetExchangeName(Type messageType) => GetNamespace(messageType).ToLowerInvariant();
 
-        var messageNamespace = messageType.GetCustomAttribute<MessageNamespaceAttribute>()?.Namespace ?? @namespace;
-        var assemblyName = Assembly.GetCallingAssembly().GetName().Name;
-        var typeName = FromPascalToUnderscores(messageType.Name).ToLowerInvariant();
+    public string GetErrorQueueName() => $"{@namespace}.error";
+    public string GetErrorExchangeName() => $"{@namespace}.exchange-error";
 
-        return $"{assemblyName}_{messageNamespace}_{typeName}";
-    }
+    private string GetNamespace(Type messageType) =>
+        messageType.GetCustomAttribute<MessageNamespaceAttribute>()?.Namespace ?? @namespace;
 
     private string FromPascalToUnderscores(string text) => string.Concat(
     text.Select((@char, index) =>

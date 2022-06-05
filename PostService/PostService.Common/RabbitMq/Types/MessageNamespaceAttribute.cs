@@ -1,6 +1,6 @@
 ﻿namespace PostService.Common.RabbitMq.Types;
 
-[AttributeUsage(AttributeTargets.Interface)]
+[AttributeUsage(AttributeTargets.Class)]
 public class MessageNamespaceAttribute : Attribute
 {
     public string Namespace { get; }

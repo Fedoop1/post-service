@@ -1,8 +1,10 @@
-﻿using PostService.Common.Types;
+﻿namespace PostService.Common.RabbitMq.Types;
 
-namespace PostService.Common.RabbitMq.Types;
 public interface IMessageNamingConventionProvider
 {
-    string GetMessageName<TMessage>() where TMessage : IMessage;
-    string GetQueueName<TMessage>() where TMessage : IMessage;
+    string GetMessageName(Type messageType);
+    string GetQueueName(Type messageType);
+    string GetExchangeName(Type messageType);
+    string GetErrorQueueName();
+    string GetErrorExchangeName();
 }

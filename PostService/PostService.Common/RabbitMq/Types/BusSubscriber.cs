@@ -10,44 +10,51 @@ namespace PostService.Common.RabbitMq.Types;
 public partial class BusSubscriber : IBusSubscriber
 {
     private readonly IBus busClient;
+    private readonly IBusPublisher busPublisher;
     private readonly IMessageNamingConventionProvider messageNamingConventionProvider;
     private readonly IServiceProvider serviceProvider;
     private readonly ILogger logger;
     private readonly RabbitMqOptions options;
 
-    public BusSubscriber(IOptions<RabbitMqOptions> options, IBus busClient, IMessageNamingConventionProvider messageNamingConventionProvider, IServiceProvider serviceProvider, ILogger<BusSubscriber> logger)
+    public BusSubscriber(
+        IOptions<RabbitMqOptions> options,
+        IBus busClient,
+        IBusPublisher busPublisher,
+        IMessageNamingConventionProvider messageNamingConventionProvider,
+        IServiceProvider serviceProvider,
+        ILogger<BusSubscriber> logger)
+
     {
         this.options = options.Value;
         this.busClient = busClient;
+        this.busPublisher = busPublisher;
         this.messageNamingConventionProvider = messageNamingConventionProvider;
         this.serviceProvider = serviceProvider;
         this.logger = logger;
     }
 
-    public IBusSubscriber SubscribeCommand<TCommand>(Action<TCommand, MessageException> onError = null) where TCommand : ICommand
+    public IBusSubscriber SubscribeCommand<TCommand>(Func<TCommand, MessageException, IRejectEvent> onError = null) where TCommand : ICommand
     {
-        var queueName = this.messageNamingConventionProvider.GetQueueName<TCommand>();
-
-        this.busClient.SendReceive.ReceiveAsync<TCommand>(queueName, command =>
+        this.busClient.SendReceive.ReceiveAsync<TCommand>(null, command =>
         {
             var commandHandler = this.serviceProvider.GetService<ICommandHandler<TCommand>>();
 
-            return TryHandleAsync(command, () => commandHandler.HandleAsync(command), onError);
+            return TryHandleAsync(command, () => commandHandler.HandleAsync(command), onError, this.options.Retries);
         });
 
-        LogCommandSubscription(typeof(TCommand).Name, queueName);
+        LogCommandSubscription(typeof(TCommand).Name, messageNamingConventionProvider.GetQueueName(typeof(TCommand)));
         return this;
     }
 
-    public IBusSubscriber SubscribeEvent<TEvent>(Action<TEvent, MessageException> onError = null) where TEvent : IEvent
+    public IBusSubscriber SubscribeEvent<TEvent>(Func<TEvent, MessageException, IRejectEvent> onError = null) where TEvent : IEvent
     {
-        var eventName = this.messageNamingConventionProvider.GetMessageName<TEvent>();
+        var eventName = this.messageNamingConventionProvider.GetMessageName(typeof(TEvent));
 
-        this.busClient.PubSub.SubscribeAsync<TEvent>(eventName, @event =>
+        this.busClient.PubSub.SubscribeAsync<TEvent>("", @event =>
         {
             var eventHandler = this.serviceProvider.GetService<IEventHandler<TEvent>>();
 
-            return TryHandleAsync(@event, () => eventHandler.HandleAsync(@event), onError);
+            return TryHandleAsync(@event, () => eventHandler.HandleAsync(@event), onError, this.options.Retries);
         });
 
 
@@ -56,7 +63,7 @@ public partial class BusSubscriber : IBusSubscriber
     }
 
     public async Task TryHandleAsync<TMessage>(TMessage message, Func<Task> handler,
-        Action<TMessage, MessageException> onError, int retries = 0) where TMessage : IMessage
+        Func<TMessage, MessageException, IRejectEvent> onError, int retries = 0) where TMessage : IMessage
     {
         var messageName = message.GetType().Name;
 
@@ -70,7 +77,19 @@ public partial class BusSubscriber : IBusSubscriber
         {
             LogError(messageName, exception.GetType().Name, exception.Message);
 
-            if (--retries <= 0) throw new MessageException($"Unable to handle a message: {messageName}");
+            if (exception is MessageException messageException && onError is not null)
+            {
+                var rejectEvent = onError(message, messageException);
+                LogRejectEvent(messageName, rejectEvent.GetType().Name, rejectEvent.Reason);
+
+                await this.busPublisher.PublishAsync(rejectEvent);
+                return;
+            }
+
+            if (--retries <= 0)
+            {
+                throw new Exception($"Unable to handle a message: {messageName}");
+            }
 
             LogRetry(messageName, this.options.RetriesInterval, retries);
 
@@ -79,7 +98,7 @@ public partial class BusSubscriber : IBusSubscriber
         }
     }
 
-    [LoggerMessage(1, LogLevel.Warning, "Retry a {message} in {seconds}. Reties left: {retriesLeft}.")]
+    [LoggerMessage(1, LogLevel.Warning, "Retry a {message} in {seconds}. Reties left: {retriesLeft}")]
     partial void LogRetry(string message, TimeSpan seconds, int retriesLeft);
 
     [LoggerMessage(2, LogLevel.Information, "Handling a message {message}")]
@@ -92,4 +111,7 @@ public partial class BusSubscriber : IBusSubscriber
 
     [LoggerMessage(5, LogLevel.Error, "Unable to handle a message {messageName}. An error occurred: {error}. Details: {errorMessage}")]
     partial void LogError(string messageName, string error, string errorMessage);
+
+    [LoggerMessage(5, LogLevel.Information, "Publishing a reject event {rejectEventName} for message {messageName}. Reason: {reason}")]
+    partial void LogRejectEvent(string messageName, string rejectEventName, string reason);
 }

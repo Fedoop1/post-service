@@ -5,17 +5,15 @@ namespace PostService.Common.RabbitMq.Types;
 public class BusPublisher : IBusPublisher
 {
     private readonly IBus busClient;
-    private readonly IMessageNamingConventionProvider messageNamingConventionProvider;
 
-    public BusPublisher(IBus busClient, IMessageNamingConventionProvider messageNamingConventionProvider)
+    public BusPublisher(IBus busClient)
     {
         this.busClient = busClient;
-        this.messageNamingConventionProvider = messageNamingConventionProvider;
     }
 
     public async Task SendAsync<TCommand>(TCommand command)
         where TCommand : ICommand =>
-        await this.busClient.SendReceive.SendAsync(this.messageNamingConventionProvider.GetQueueName<TCommand>(),
+        await this.busClient.SendReceive.SendAsync(null,
             command);
 
     public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent =>
