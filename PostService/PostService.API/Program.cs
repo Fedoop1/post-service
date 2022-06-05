@@ -1,6 +1,7 @@
 using PostService.Common.App.Extensions;
 using PostService.Common.CORS.Extensions;
 using PostService.Common.Jwt.Extensions;
+using PostService.Common.Redis.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,9 @@ builder.Services.AddControllers();
 
 builder.ConfigureAppOptions();
 
+builder.AddRedis();
 builder.AddJwt();
+builder.AddAccessTokenValidation();
 builder.AddCors();
 
 builder.Services.AddAuthorization(options => options.AddPolicy("Admin", builder => builder.RequireRole("admin")));
@@ -19,6 +22,7 @@ app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAccessTokenValidation();
 
 app.MapDefaultControllerRoute();
 app.Run();
