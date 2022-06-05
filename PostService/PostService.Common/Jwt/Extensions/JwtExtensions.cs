@@ -26,7 +26,7 @@ public static class JwtExtensions
 
         webBuilder.Services.AddSingleton<IJwtHandler, JwtHandler>();
         webBuilder.Services.AddSingleton<IAccessTokenValidator, AccessTokenValidator>();
-        webBuilder.Services.AddTransient<AccessTokenValidationMiddleware>();
+        
 
         webBuilder.Services.AddAuthentication(config =>
         {
@@ -46,6 +46,9 @@ public static class JwtExtensions
             };
         });
     }
+
+    public static void AddAccessTokenValidation(this WebApplicationBuilder webBuilder) =>
+        webBuilder.Services.AddTransient<AccessTokenValidationMiddleware>();
 
     public static void UseAccessTokenValidation(this WebApplication webApplication) =>
         webApplication.UseMiddleware<AccessTokenValidationMiddleware>();

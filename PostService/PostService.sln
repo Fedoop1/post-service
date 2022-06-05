@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService.API", "PostService.API\PostService.API.csproj", "{0093AB50-35FB-4467-AE71-AA898AE643BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostService.API", "PostService.API\PostService.API.csproj", "{0093AB50-35FB-4467-AE71-AA898AE643BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService.Identity", "PostService.Identity\PostService.Identity.csproj", "{9A49395F-207F-4269-BB11-B9E361D6AEE0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostService.Identity", "PostService.Identity\PostService.Identity.csproj", "{9A49395F-207F-4269-BB11-B9E361D6AEE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService.Orders", "PostService.Orders\PostService.Orders.csproj", "{DFC7834B-FB77-480A-9FB3-BE6FD3699B3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostService.Orders", "PostService.Orders\PostService.Orders.csproj", "{DFC7834B-FB77-480A-9FB3-BE6FD3699B3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService.Common", "PostService.Common\PostService.Common.csproj", "{F01AAAD5-C7F6-4B0B-B046-049108BBDC81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PostService.Common", "PostService.Common\PostService.Common.csproj", "{F01AAAD5-C7F6-4B0B-B046-049108BBDC81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService.Operations", "PostService.Operations\PostService.Operations.csproj", "{CF0B0816-6AB1-4138-A32B-4F1DD832D360}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{F01AAAD5-C7F6-4B0B-B046-049108BBDC81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F01AAAD5-C7F6-4B0B-B046-049108BBDC81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F01AAAD5-C7F6-4B0B-B046-049108BBDC81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF0B0816-6AB1-4138-A32B-4F1DD832D360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF0B0816-6AB1-4138-A32B-4F1DD832D360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF0B0816-6AB1-4138-A32B-4F1DD832D360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF0B0816-6AB1-4138-A32B-4F1DD832D360}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

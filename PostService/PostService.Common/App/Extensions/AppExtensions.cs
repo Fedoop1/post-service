@@ -17,7 +17,7 @@ public static class AppExtensions
 
     public static void RegisterProviders(this WebApplicationBuilder webBuilder)
     {
-        var assembly = Assembly.GetCallingAssembly();
+        var assembly = Assembly.GetEntryAssembly();
         var assemblyTypes = assembly.DefinedTypes;
 
         var assemblyInjectableInterfaces = assemblyTypes.Where(assemblyType =>
