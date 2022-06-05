@@ -4,7 +4,7 @@ using PostService.Common.Enums;
 using PostService.Common.Jwt.Types;
 using PostService.Common.RabbitMq.Types;
 using PostService.Identity.Exceptions;
-using PostService.Identity.Messages.Event;
+using PostService.Identity.Messages.Events;
 using PostService.Identity.Models.Domain;
 using PostService.Identity.Repositories.Interfaces;
 

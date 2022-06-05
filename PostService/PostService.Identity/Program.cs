@@ -21,6 +21,7 @@ builder.Services.AddSingleton<IMongoDbInitializer, MongoDbInitializer>();
 builder.ConfigureAppOptions();
 
 builder.AddJwt();
+builder.AddAccessTokenValidation();
 builder.AddRedis();
 builder.AddCors();
 builder.AddRabbitMq();

@@ -5,7 +5,7 @@ using PostService.Common.Jwt.Extensions;
 using PostService.Common.Jwt.Types;
 using PostService.Common.RabbitMq.Types;
 using PostService.Identity.Exceptions;
-using PostService.Identity.Messages.Event;
+using PostService.Identity.Messages.Events;
 using PostService.Identity.Models.Domain;
 using PostService.Identity.Repositories.Interfaces;
 
@@ -45,7 +45,17 @@ public class TokenService : ITokenService
 
         var userRefreshToken = await this.refreshTokenRepository.GetAsync(user.Id);
 
-        if (userRefreshToken is not null && !userRefreshToken.IsRevoked) return userRefreshToken;
+        switch (userRefreshToken)
+        {
+            case null: break;
+            case var _ when userRefreshToken.IsRevoked:
+            case var _ when userRefreshToken.ExpiresAt < DateTime.Now:
+            {
+                await this.refreshTokenRepository.RemoveAsync(userRefreshToken);
+                break;
+            }
+            default: return userRefreshToken;
+        }
 
         var refreshToken = new RefreshToken(user, this.userPasswordHasher, TimeSpan.FromDays(this.jwtOptions.RefreshTokenExpiration));
         await this.refreshTokenRepository.AddAsync(refreshToken);

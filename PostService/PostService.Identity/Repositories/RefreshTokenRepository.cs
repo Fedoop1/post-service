@@ -14,12 +14,10 @@ public class RefreshTokenRepository : IRefreshTokenRepository
     }
 
     public async Task AddAsync(RefreshToken token) => await refreshTokenRepository.AddAsync(token);
-
+    public async Task RemoveAsync(RefreshToken token) => await this.refreshTokenRepository.RemoveAsync(token);
     public async Task UpdateAsync(RefreshToken token) => await refreshTokenRepository.UpdateAsync(token);
-
     public async Task<RefreshToken> GetAsync(string token) =>
         await refreshTokenRepository.FindAsync((refreshToken) => refreshToken.Token == token);
-
     public async Task<RefreshToken> GetAsync(Guid userId) =>
         await refreshTokenRepository.FindAsync((token) => token.UserId == userId);
 }

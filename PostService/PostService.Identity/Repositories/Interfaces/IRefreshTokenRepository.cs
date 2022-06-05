@@ -8,6 +8,7 @@ namespace PostService.Identity.Repositories.Interfaces;
 public interface IRefreshTokenRepository
 {
     Task AddAsync(RefreshToken token);
+    Task RemoveAsync(RefreshToken token);
     Task UpdateAsync(RefreshToken token);
     Task<RefreshToken> GetAsync(string token);
     Task<RefreshToken> GetAsync(Guid userId);
