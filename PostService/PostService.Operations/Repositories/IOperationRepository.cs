@@ -1,7 +1,9 @@
-﻿using PostService.Operations.Models.Domain;
+﻿using PostService.Common.Types;
+using PostService.Operations.Models.Domain;
 
 namespace PostService.Operations.Repositories;
 
+[Injectable]
 public interface IOperationRepository
 {
     public Task AddAsync(Operation operation);

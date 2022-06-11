@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using PostService.Common.Types;
+﻿using PostService.Common.Types;
 using PostService.Identity.Models.Domain;
 
 namespace PostService.Identity.Repositories.Interfaces;

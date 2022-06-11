@@ -25,7 +25,7 @@ public static class MongoExtensions
 
     public static void AddMongoRepository<TEntity>(this WebApplicationBuilder webBuilder, string collectionName) where TEntity : IIdentifiable
     {
-        webBuilder.Services.AddScoped<IMongoRepository<TEntity>>((config) =>
+        webBuilder.Services.AddSingleton<IMongoRepository<TEntity>>((config) =>
         {
             var mongoDb = config.GetService<IMongoDatabase>();
             return new MongoRepository<TEntity>(mongoDb, collectionName);
