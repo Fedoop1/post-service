@@ -1,5 +1,6 @@
 ﻿using EasyNetQ;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PostService.Common.Types;
@@ -16,28 +17,21 @@ public partial class BusSubscriber : IBusSubscriber
     private readonly ILogger logger;
     private readonly RabbitMqOptions options;
 
-    public BusSubscriber(
-        IOptions<RabbitMqOptions> options,
-        IBus busClient,
-        IBusPublisher busPublisher,
-        IMessageNamingConventionProvider messageNamingConventionProvider,
-        IServiceProvider serviceProvider,
-        ILogger<BusSubscriber> logger)
-
+    public BusSubscriber(IHost host)
     {
-        this.options = options.Value;
-        this.busClient = busClient;
-        this.busPublisher = busPublisher;
-        this.messageNamingConventionProvider = messageNamingConventionProvider;
-        this.serviceProvider = serviceProvider;
-        this.logger = logger;
+        this.options = host.Services.GetService<IOptions<RabbitMqOptions>>()!.Value;
+        this.busClient = host.Services.GetService<IBus>()!;
+        this.busPublisher = host.Services.GetService<IBusPublisher>()!;
+        this.messageNamingConventionProvider = host.Services.GetService<IMessageNamingConventionProvider>()!;
+        this.serviceProvider = host.Services.GetService<IServiceProvider>()!;
+        this.logger = host.Services.GetService<ILogger<BusSubscriber>>()!;
     }
 
     public IBusSubscriber SubscribeCommand<TCommand>(Func<TCommand, MessageException, IRejectEvent> onError = null) where TCommand : ICommand
     {
         this.busClient.SendReceive.ReceiveAsync<TCommand>(null, command =>
         {
-            var commandHandler = this.serviceProvider.GetService<ICommandHandler<TCommand>>();
+            var commandHandler = this.serviceProvider.CreateScope().ServiceProvider.GetService<ICommandHandler<TCommand>>();
 
             return TryHandleAsync(command, () => commandHandler.HandleAsync(command), onError, this.options.Retries);
         });
@@ -53,7 +47,6 @@ public partial class BusSubscriber : IBusSubscriber
         this.busClient.PubSub.SubscribeAsync<TEvent>("", @event =>
         {
             var eventHandler = this.serviceProvider.GetService<IEventHandler<TEvent>>();
-
             return TryHandleAsync(@event, () => eventHandler.HandleAsync(@event), onError, this.options.Retries);
         });
 
@@ -88,7 +81,7 @@ public partial class BusSubscriber : IBusSubscriber
 
             if (--retries <= 0)
             {
-                throw new Exception($"Unable to handle a message: {messageName}");
+                throw new Exception($"Unable to handle a {messageName} message");
             }
 
             LogRetry(messageName, this.options.RetriesInterval, retries);
@@ -101,17 +94,17 @@ public partial class BusSubscriber : IBusSubscriber
     [LoggerMessage(1, LogLevel.Warning, "Retry a {message} in {seconds}. Reties left: {retriesLeft}")]
     partial void LogRetry(string message, TimeSpan seconds, int retriesLeft);
 
-    [LoggerMessage(2, LogLevel.Information, "Handling a message {message}")]
+    [LoggerMessage(2, LogLevel.Information, "Handling a {message} message")]
     partial void LogHandling(string message);
 
-    [LoggerMessage(3, LogLevel.Information, "Subscribe to a command {command}. Queue name: {queueName}")]
+    [LoggerMessage(3, LogLevel.Information, "Subscribe to a {command} command. Queue name: {queueName}")]
     partial void LogCommandSubscription(string command, string queueName);
-    [LoggerMessage(4, LogLevel.Information, "Subscribe to a event {event}. Event subscription id: {subscriptionId}")]
+    [LoggerMessage(4, LogLevel.Information, "Subscribe to a {event} event. Event subscription id: {subscriptionId}")]
     partial void LogEventSubscription(string @event, string subscriptionId);
 
-    [LoggerMessage(5, LogLevel.Error, "Unable to handle a message {messageName}. An error occurred: {error}. Details: {errorMessage}")]
+    [LoggerMessage(5, LogLevel.Error, "Unable to handle a {messageName} message. An {error} error occurred. Details: {errorMessage}")]
     partial void LogError(string messageName, string error, string errorMessage);
 
-    [LoggerMessage(5, LogLevel.Information, "Publishing a reject event {rejectEventName} for message {messageName}. Reason: {reason}")]
+    [LoggerMessage(5, LogLevel.Information, "Publishing a {rejectEventName} reject event for {messageName} message. Reason: {reason}")]
     partial void LogRejectEvent(string messageName, string rejectEventName, string reason);
 }
