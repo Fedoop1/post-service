@@ -22,7 +22,7 @@ public class GenericEventHandler<TEvent> : IEventHandler<TEvent> where TEvent : 
             case IRejectEvent rejectEvent:
             {
                 var operation = new Operation()
-                { Id = new Guid(), Reason = rejectEvent.Reason, State = OperationState.Rejected };
+                { Id = new Guid(), Reason = rejectEvent.Reason, State = OperationState.Rejected, Name = @event.GetType().Name };
 
                 await this.operationStorage.SetAsync(operation);
                 await this.operationPublisher.PublishRejectedAsync(operation);
@@ -31,7 +31,7 @@ public class GenericEventHandler<TEvent> : IEventHandler<TEvent> where TEvent : 
             case IPendingEvent:
             {
                 var operation = new Operation()
-                    { Id = new Guid(), State = OperationState.Pending };
+                    { Id = new Guid(), State = OperationState.Pending, Name = @event.GetType().Name };
 
                 await this.operationStorage.SetAsync(operation);
                 await this.operationPublisher.PublishPendingAsync(operation);
@@ -40,7 +40,7 @@ public class GenericEventHandler<TEvent> : IEventHandler<TEvent> where TEvent : 
             case IEvent:
             {
                 var operation = new Operation()
-                    { Id = new Guid(), State = OperationState.Completed };
+                    { Id = new Guid(), State = OperationState.Completed, Name = @event.GetType().Name };
 
                 await this.operationStorage.SetAsync(operation);
                 await this.operationPublisher.PublishCompletedAsync(operation);

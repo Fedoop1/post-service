@@ -1,21 +1,18 @@
 ﻿using PostService.Operations.Models.Domain;
+using PostService.Operations.Repositories;
 
 namespace PostService.Operations.Services;
 
 public class OperationStorage : IOperationStorage
 {
-    public OperationStorage()
-    {
+    private readonly IOperationRepository operationRepository;
 
+    public OperationStorage(IOperationRepository operationRepository)
+    {
+        this.operationRepository = operationRepository;
     }
 
-    public Task SetAsync(Operation operation)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task SetAsync(Operation operation) => await this.operationRepository.AddAsync(operation);
 
-    public Task<Operation> GetAsync(Guid id)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<Operation> GetAsync(Guid id) => await this.operationRepository.GetAsync(id);
 }

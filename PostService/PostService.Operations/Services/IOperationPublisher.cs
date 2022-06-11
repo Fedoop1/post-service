@@ -1,7 +1,9 @@
-﻿using PostService.Operations.Models.Domain;
+﻿using PostService.Common.Types;
+using PostService.Operations.Models.Domain;
 
 namespace PostService.Operations.Services;
 
+[Injectable]
 public interface IOperationPublisher
 {
     public Task PublishCompletedAsync(Operation operation);
