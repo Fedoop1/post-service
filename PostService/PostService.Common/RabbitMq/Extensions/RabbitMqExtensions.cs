@@ -22,26 +22,30 @@ public static class RabbitMqExtensions
             .AddSingleton<IMessageNamingConventionProvider>(provider =>
                 provider.GetService<MessageNamingConventionProvider>());
 
+        webApplicationBuilder.Services
+            .AddSingleton<ITypeNameSerializer, TypeNameSerializer>();
+
         webApplicationBuilder.Services.AddSingleton(provider =>
         {
             var rabbitMqOptions = provider.GetService<IOptions<RabbitMqOptions>>()!.Value;
             var namingConventionProvider = provider.GetService<MessageNamingConventionProvider>();
+            var typeNameSerializer = provider.GetService<ITypeNameSerializer>();
 
             var busPublisher = RabbitHutch.CreateBus(rabbitMqOptions.HostName, (ushort)rabbitMqOptions.Port,
                 rabbitMqOptions.VirtualHost, rabbitMqOptions.UserName, rabbitMqOptions.Password,
                 rabbitMqOptions.HeartbeatInterval, register =>
                 {
                     register.Register<IConventions>(namingConventionProvider);
+                    register.Register<ITypeNameSerializer>(typeNameSerializer);
                 });
 
             return busPublisher;
         });
 
         webApplicationBuilder.Services.AddSingleton<IBusPublisher, BusPublisher>();
-        webApplicationBuilder.Services.AddSingleton<IBusSubscriber, BusSubscriber>();
     }
 
-    public static IBusSubscriber UseRabbitMq(this WebApplication webApp) => webApp.Services.GetService<IBusSubscriber>();
+    public static IBusSubscriber UseRabbitMq(this WebApplication webApp) => new BusSubscriber(webApp);
 
     private static void ConfigureRabbitMqOptions(this WebApplicationBuilder webBuilder) =>
         webBuilder.Services.AddOptions<RabbitMqOptions>().BindConfiguration(SectionName);
