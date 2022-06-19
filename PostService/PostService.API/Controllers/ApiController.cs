@@ -6,5 +6,10 @@ namespace PostService.API.Controllers;
 [ApiController]
 public class ApiController : ControllerBase
 {
+    [Route("ping")]
+    public IActionResult Ping()
+    {
+        return Ok("pong");
+    }
 }
 

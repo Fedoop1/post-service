@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
+    <PackageReference Include="RestEase" Version="1.5.7" />
   </ItemGroup>
 
   <ItemGroup>

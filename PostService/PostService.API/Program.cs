@@ -1,4 +1,5 @@
 using PostService.Common.App.Extensions;
+using PostService.Common.Consul.Extensions;
 using PostService.Common.CORS.Extensions;
 using PostService.Common.Jwt.Extensions;
 using PostService.Common.Redis.Extensions;
@@ -13,12 +14,14 @@ builder.AddRedis();
 builder.AddJwt();
 builder.AddAccessTokenValidation();
 builder.AddCors();
+builder.AddConsul();
 
 builder.Services.AddAuthorization(options => options.AddPolicy("Admin", builder => builder.RequireRole("admin")));
 
 var app = builder.Build();
 
 app.UseCors();
+app.UseConsul();
 
 app.UseAuthentication();
 app.UseAuthorization();
