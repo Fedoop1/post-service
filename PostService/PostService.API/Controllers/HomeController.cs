@@ -5,8 +5,9 @@ using PostService.Common.App.Types;
 
 namespace PostService.API.Controllers;
 
-[Route("")]
 [ApiController]
+[AllowAnonymous]
+[Route("")]
 public class HomeController : ControllerBase
 {
     private readonly AppOptions appOptions;
@@ -16,7 +17,9 @@ public class HomeController : ControllerBase
         this.appOptions = appOptions.Value;
     }
 
-    [HttpGet]
-    [AllowAnonymous]
+    [HttpGet("")]
     public IActionResult Index() => Ok(appOptions.Name);
+
+    [HttpGet("ping")]
+    public IActionResult Ping() => Ok("pong");
 }
