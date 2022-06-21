@@ -1,7 +1,9 @@
+using PostService.API.Services;
 using PostService.Common.App.Extensions;
 using PostService.Common.Consul.Extensions;
 using PostService.Common.CORS.Extensions;
 using PostService.Common.Jwt.Extensions;
+using PostService.Common.LoadBalancing.Extensions;
 using PostService.Common.Redis.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,8 @@ builder.AddJwt();
 builder.AddAccessTokenValidation();
 builder.AddCors();
 builder.AddConsul();
+
+builder.RegisterServiceForwarder<IOperationsService>("operations-service");
 
 builder.Services.AddAuthorization(options => options.AddPolicy("Admin", builder => builder.RequireRole("admin")));
 
