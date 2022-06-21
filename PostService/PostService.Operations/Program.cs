@@ -1,4 +1,5 @@
 using PostService.Common.App.Extensions;
+using PostService.Common.Consul.Extensions;
 using PostService.Common.CORS.Extensions;
 using PostService.Common.Jwt.Extensions;
 using PostService.Common.Mongo.Extensions;
@@ -14,6 +15,7 @@ builder.Services.AddControllers();
 
 builder.AddJwt();
 builder.AddCors();
+builder.AddConsul();
 builder.AddRedis();
 
 builder.AddMongo();
@@ -33,6 +35,8 @@ app.UseRabbitMq()
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseConsul();
+
+app.MapDefaultControllerRoute();
 
 app.Run();

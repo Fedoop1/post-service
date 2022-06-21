@@ -6,7 +6,6 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using PostService.Common.Jwt.Services;
 using PostService.Common.Jwt.Types;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using PostService.Common.Jwt.Middlewares;
 
 namespace PostService.Common.Jwt.Extensions;
@@ -26,14 +25,8 @@ public static class JwtExtensions
 
         webBuilder.Services.AddSingleton<IJwtHandler, JwtHandler>();
         webBuilder.Services.AddSingleton<IAccessTokenValidator, AccessTokenValidator>();
-        
 
-        webBuilder.Services.AddAuthentication(config =>
-        {
-            config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-        }).AddJwtBearer(config =>
+        webBuilder.Services.AddAuthentication().AddJwtBearer(config =>
         {
             config.SaveToken = true;
             config.TokenValidationParameters = new TokenValidationParameters()

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using PostService.Common.App.Extensions;
+using PostService.Common.Consul.Extensions;
 using PostService.Common.Jwt.Extensions;
 using PostService.Common.Mongo.Extensions;
 using PostService.Identity.Models.Domain;
@@ -24,6 +25,7 @@ builder.AddJwt();
 builder.AddAccessTokenValidation();
 builder.AddRedis();
 builder.AddCors();
+builder.AddConsul();
 builder.AddRabbitMq();
 
 builder.AddMongo();
@@ -38,6 +40,8 @@ builder.RegisterProviders();
 var app = builder.Build();
 
 app.UseCors();
+app.UseConsul();
+
 app.UseRabbitMq();
 
 app.UseAuthentication();
@@ -45,6 +49,8 @@ app.UseAuthorization();
 app.UseAccessTokenValidation();
 
 app.InitializeAsync();
+
+
 
 app.MapDefaultControllerRoute();
 app.Run();
