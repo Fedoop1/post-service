@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using PostService.Common.Consul.Types;
+using PostService.Common.LoadBalancing.Types;
 
 namespace PostService.Common.Consul.Extensions;
 public static class ConsulExtensions
@@ -15,6 +16,7 @@ public static class ConsulExtensions
         webBuilder.Services.AddOptions<ConsulOptions>().BindConfiguration(SectionName);
 
         webBuilder.Services.AddSingleton<IConsulServiceRegistry, ConsulServiceRegistry>();
+        webBuilder.Services.AddSingleton<IServiceRegister, ConsulServiceRegister>();
         webBuilder.Services.AddSingleton<IConsulClient>(p => new ConsulClient(config =>
         {
             var consulOptions = p.GetService<IOptions<ConsulOptions>>().Value;
@@ -32,7 +34,7 @@ public static class ConsulExtensions
         var serviceId = Guid.NewGuid().ToString("N");
         var consulClient = host.Services.GetService<IConsulClient>();
         var scheme =
-            !string.IsNullOrEmpty(consulOptions?.ServiceAddress) && consulOptions.ServiceAddress.StartsWith("http")
+            !string.IsNullOrEmpty(consulOptions?.ServiceAddress) && consulOptions.ServiceAddress.StartsWith("http", StringComparison.InvariantCultureIgnoreCase)
                 ? string.Empty
                 : "http://";
 
@@ -50,8 +52,7 @@ public static class ConsulExtensions
                         ? 10
                         : consulOptions.RemoveAfterInterval),
                     HTTP =
-                        $"{scheme}{consulOptions.ClusterAddress}:{consulOptions.ServicePort}/{consulOptions.PingEndpoint}"
-
+                        $"{scheme}{consulOptions.ServiceAddress}:{consulOptions.ServicePort}/{consulOptions.PingEndpoint}"
                 }
                 : null,
 
