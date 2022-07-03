@@ -6,9 +6,12 @@ using PostService.Common.Mongo.Extensions;
 using PostService.Identity.Models.Domain;
 using PostService.Common.CORS.Extensions;
 using PostService.Common.Extensions;
+using PostService.Common.Logging.Extensions;
 using PostService.Common.Mongo.Types;
 using PostService.Common.RabbitMq.Extensions;
 using PostService.Common.Redis.Extensions;
+using PostService.Common.Seq.Extensions;
+using PostService.Common.Tracing.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +30,10 @@ builder.AddRedis();
 builder.AddCors();
 builder.AddConsul();
 builder.AddRabbitMq();
+builder.AddConsoleLoggingFormatter();
+builder.AddControllerLogging();
+builder.AddSeq();
+builder.AddTracing();
 
 builder.AddMongo();
 builder.AddMongoRepository<User>("users");
@@ -39,6 +46,7 @@ builder.RegisterProviders();
 // Application
 var app = builder.Build();
 
+app.UseTracing();
 app.UseCors();
 app.UseConsul();
 
@@ -49,8 +57,6 @@ app.UseAuthorization();
 app.UseAccessTokenValidation();
 
 app.InitializeAsync();
-
-
 
 app.MapDefaultControllerRoute();
 app.Run();
