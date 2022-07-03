@@ -23,7 +23,7 @@ public class AccessTokenValidationMiddleware : IMiddleware
         {
             var accessToken = JwtExtensions.GetBearerToken(authorizationHeader);
 
-            if (!this.accessTokenValidator.ValidateToken(accessToken).isValid || 
+            if (!this.accessTokenValidator.ValidateToken(accessToken).IsValid || 
                 string.IsNullOrEmpty(await this.distributedCache.GetStringAsync(JwtExtensions.GetAccessTokenCacheKey(accessToken))))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;

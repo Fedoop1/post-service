@@ -16,16 +16,18 @@ public class AccessTokenValidator : IAccessTokenValidator
         if (string.IsNullOrEmpty(accessToken))
             throw new InvalidAccessTokenException("Access token can't be null or empty");
 
+        AccessToken? tokenPayload = default;
+
         try
         {
-            var tokenPayload = this.jwtHandler.GetTokenPayload(accessToken);
+            tokenPayload = this.jwtHandler.GetTokenPayload(accessToken);
         }
         catch (Exception e)
         {
-            return new AccessTokenValidationResult(false, e.Message);
+            return new AccessTokenValidationResult(false, tokenPayload, e.Message);
         }
 
-        return new AccessTokenValidationResult(true);
+        return new AccessTokenValidationResult(true, tokenPayload);
 
     }
 }
